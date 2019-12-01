@@ -1,8 +1,8 @@
-import unittest
-import fuel_calculator
+from unittest import TestCase
+from day_1 import fuel_calculator
 
 
-class CountFuelNeededTestCase(unittest.TestCase):
+class CountFuelNeededTestCase(TestCase):
     def test_count_fuel_needed_without_self_mass(self):
         self.assertEqual(2, fuel_calculator.count_fuel_needed(12))
         self.assertEqual(2, fuel_calculator.count_fuel_needed(14))

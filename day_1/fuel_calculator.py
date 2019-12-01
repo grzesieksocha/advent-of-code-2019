@@ -1,8 +1,8 @@
-import math
+from math import floor
 
 
 def count_fuel_needed(mass, initial_value=0, include_fuel_mass=False):
-    fuel_for_mass = (math.floor(mass / 3)) - 2
+    fuel_for_mass = (floor(mass / 3)) - 2
     if not include_fuel_mass:
         return initial_value + fuel_for_mass
 
