@@ -1,4 +1,4 @@
-from day_2.intcode_analyzer import analyze
+from intcode.computer import analyze
 import sys
 
 

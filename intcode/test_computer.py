@@ -1,5 +1,5 @@
 from unittest import TestCase
-from day_2.intcode_analyzer import analyze
+from intcode.computer import analyze
 
 
 class AnalyzeIntcodeTestCase(TestCase):
