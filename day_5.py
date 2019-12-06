@@ -7,7 +7,7 @@ def main():
     print(f'day 5 - part 1: {part_1_solution}')
 
     part_2_solution = solve_part_2()
-    print(f'day 4 - part 2: {part_2_solution}')
+    print(f'day 5 - part 2: {part_2_solution}')
 
 
 main()
