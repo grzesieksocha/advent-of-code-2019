@@ -22,17 +22,12 @@ def main():
         santa_orbits_path.append(planet.name)
         planet = planet.is_orbiting
 
-    found = False
     for my_key, planet_in_path in enumerate(my_orbits_path):
         if planet_in_path in santa_orbits_path:
-            for santa_key, santa_planet_in_path in enumerate(santa_orbits_path):
-                if santa_planet_in_path == planet_in_path:
-                    found = True
-                    print(
-                        f'Planet {planet_in_path} is {my_key - 1} steps from me and '
-                        f'{santa_key - 1} from him! {my_key + santa_key - 2} is the answer')
-                    break
-        if found:
+            santa_key = santa_orbits_path.index(planet_in_path)
+            print(
+                f'Planet {planet_in_path} is {my_key - 1} steps from me and '
+                f'{santa_key - 1} from him! {my_key + santa_key - 2} is the answer')
             break
 
 
