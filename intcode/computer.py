@@ -12,18 +12,7 @@ class Logger:
         return self.text
 
 
-def get_value(mode, intcode, instruction_pointer, offset, relative_base):
-    if mode == 0:  # position
-        value = intcode[intcode[instruction_pointer + offset]]
-    elif mode == 1:  # immediate
-        value = intcode[instruction_pointer + offset]
-    else:  # relative
-        value = intcode[relative_base + intcode[instruction_pointer + offset]]
-
-    return value
-
-
-def get_key_for_insert(mode, intcode, instruction_pointer, offset, relative_base):
+def get_key(mode, intcode, instruction_pointer, offset, relative_base):
     if mode == 0:  # position
         key = intcode[instruction_pointer + offset]
     elif mode == 1:  # immediate
@@ -32,6 +21,10 @@ def get_key_for_insert(mode, intcode, instruction_pointer, offset, relative_base
         key = relative_base + intcode[instruction_pointer + offset]
 
     return key
+
+
+def get_value(mode, intcode, instruction_pointer, offset, relative_base):
+    return intcode[get_key(mode, intcode, instruction_pointer, offset, relative_base)]
 
 
 def analyze(
@@ -71,7 +64,7 @@ def analyze(
             else:
                 result = num_one * num_two
 
-            key = get_key_for_insert(third_mode, intcode, instruction_pointer, 3, relative_base)
+            key = get_key(third_mode, intcode, instruction_pointer, 3, relative_base)
             intcode[key] = result
             log += f'Operation = {result} into {key}\n'
             instruction_pointer += 4
@@ -83,7 +76,7 @@ def analyze(
                 input_number += 1
             else:
                 manual_input = int(input("Provide input: "))
-                key = get_key_for_insert(first_mode, intcode, instruction_pointer, 1, relative_base)
+                key = get_key(first_mode, intcode, instruction_pointer, 1, relative_base)
                 intcode[key] = manual_input
 
                 log += f'User input {manual_input} into {key}\n'
@@ -112,7 +105,7 @@ def analyze(
             num_one = get_value(first_mode, intcode, instruction_pointer, 1, relative_base)
             num_two = get_value(second_mode, intcode, instruction_pointer, 2, relative_base)
 
-            key = get_key_for_insert(third_mode, intcode, instruction_pointer, 3, relative_base)
+            key = get_key(third_mode, intcode, instruction_pointer, 3, relative_base)
             if (opcode == 7 and num_one < num_two) or (opcode == 8 and num_one == num_two):
                 intcode[key] = 1
                 log += f'Operation = 1 into {key}\n'
