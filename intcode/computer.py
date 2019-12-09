@@ -12,6 +12,28 @@ class Logger:
         return self.text
 
 
+def get_value(mode, intcode, instruction_pointer, offset, relative_base):
+    if mode == 0:  # position
+        value = intcode[intcode[instruction_pointer + offset]]
+    elif mode == 1:  # immediate
+        value = intcode[instruction_pointer + offset]
+    else:  # relative
+        value = intcode[relative_base + intcode[instruction_pointer + offset]]
+
+    return value
+
+
+def get_key_for_insert(mode, intcode, instruction_pointer, offset, relative_base):
+    if mode == 0:  # position
+        key = intcode[instruction_pointer + offset]
+    elif mode == 1:  # immediate
+        key = instruction_pointer + offset
+    else:  # relative
+        key = relative_base + intcode[instruction_pointer + offset]
+
+    return key
+
+
 def analyze(
         instruction_pointer: int,
         intcode: list,
@@ -19,17 +41,21 @@ def analyze(
         inputs=None,
         logger: Logger = None
 ):
+    extra_memory = [0] * 10000
+    intcode += extra_memory
     if inputs is None:
         inputs = []
 
     if logger is None:
         logger = Logger()
 
+    relative_base = 0
     input_number = 0
     while instruction_pointer <= len(intcode):
         log = ''
         opcode, first_mode, second_mode, third_mode = define_mode(intcode[instruction_pointer])
         log += f'Intcode = {intcode}\n'
+        log += f'Instruction = {intcode[instruction_pointer]}\n'
         log += f'Opcode = {opcode}; m1:{first_mode}, m2:{second_mode}, m3:{third_mode}\n'
 
         if opcode == 99:
@@ -37,23 +63,17 @@ def analyze(
             return 0, instruction_pointer, intcode, True
 
         if opcode == 1 or opcode == 2:
-            if first_mode == 0:
-                num_one = intcode[intcode[instruction_pointer + 1]]
-            else:
-                num_one = intcode[instruction_pointer + 1]
-
-            if second_mode == 0:
-                num_two = intcode[intcode[instruction_pointer + 2]]
-            else:
-                num_two = intcode[instruction_pointer + 2]
+            num_one = get_value(first_mode, intcode, instruction_pointer, 1, relative_base)
+            num_two = get_value(second_mode, intcode, instruction_pointer, 2, relative_base)
 
             if opcode == 1:
                 result = num_one + num_two
             else:
                 result = num_one * num_two
 
-            intcode[intcode[instruction_pointer + 3]] = result
-            log += f'Operation = {result} into {intcode[instruction_pointer + 3]}\n'
+            key = get_key_for_insert(third_mode, intcode, instruction_pointer, 3, relative_base)
+            intcode[key] = result
+            log += f'Operation = {result} into {key}\n'
             instruction_pointer += 4
         elif opcode == 3:
             if automatic_mode:
@@ -62,14 +82,15 @@ def analyze(
                 log += f'Operation = {insert} into {intcode[instruction_pointer + 1]}\n'
                 input_number += 1
             else:
-                intcode[intcode[instruction_pointer + 1]] = int(input("Provide input: "))
+                manual_input = int(input("Provide input: "))
+                key = get_key_for_insert(first_mode, intcode, instruction_pointer, 1, relative_base)
+                intcode[key] = manual_input
+
+                log += f'User input {manual_input} into {key}\n'
 
             instruction_pointer += 2
         elif opcode == 4:
-            if first_mode == 0:
-                num_one = intcode[intcode[instruction_pointer + 1]]
-            else:
-                num_one = intcode[instruction_pointer + 1]
+            num_one = get_value(first_mode, intcode, instruction_pointer, 1, relative_base)
 
             if automatic_mode:
                 instruction_pointer += 2
@@ -79,15 +100,8 @@ def analyze(
                 print(num_one)
             instruction_pointer += 2
         elif opcode == 5 or opcode == 6:
-            if first_mode == 0:
-                num_one = intcode[intcode[instruction_pointer + 1]]
-            else:
-                num_one = intcode[instruction_pointer + 1]
-
-            if second_mode == 0:
-                num_two = intcode[intcode[instruction_pointer + 2]]
-            else:
-                num_two = intcode[instruction_pointer + 2]
+            num_one = get_value(first_mode, intcode, instruction_pointer, 1, relative_base)
+            num_two = get_value(second_mode, intcode, instruction_pointer, 2, relative_base)
 
             if (opcode == 5 and num_one != 0) or (opcode == 6 and num_one == 0):
                 instruction_pointer = num_two
@@ -95,24 +109,25 @@ def analyze(
             else:
                 instruction_pointer += 3
         elif opcode == 7 or opcode == 8:
-            if first_mode == 0:
-                num_one = intcode[intcode[instruction_pointer + 1]]
-            else:
-                num_one = intcode[instruction_pointer + 1]
+            num_one = get_value(first_mode, intcode, instruction_pointer, 1, relative_base)
+            num_two = get_value(second_mode, intcode, instruction_pointer, 2, relative_base)
 
-            if second_mode == 0:
-                num_two = intcode[intcode[instruction_pointer + 2]]
-            else:
-                num_two = intcode[instruction_pointer + 2]
-
+            key = get_key_for_insert(third_mode, intcode, instruction_pointer, 3, relative_base)
             if (opcode == 7 and num_one < num_two) or (opcode == 8 and num_one == num_two):
-                intcode[intcode[instruction_pointer + 3]] = 1
-                log += f'Operation = 1 into {intcode[instruction_pointer + 3]}\n'
+                intcode[key] = 1
+                log += f'Operation = 1 into {key}\n'
             else:
-                intcode[intcode[instruction_pointer + 3]] = 0
-                log += f'Operation = 0 into {intcode[instruction_pointer + 3]}\n'
+                intcode[key] = 0
+                log += f'Operation = 0 into {key}\n'
 
             instruction_pointer += 4
+        elif opcode == 9:
+            num_one = get_value(first_mode, intcode, instruction_pointer, 1, relative_base)
+
+            relative_base += num_one
+            log += f'New relative base value {relative_base}\n'
+
+            instruction_pointer += 2
         log += '\n\n'
         logger.add_log(log)
 
