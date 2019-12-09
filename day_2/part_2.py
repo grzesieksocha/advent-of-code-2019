@@ -11,7 +11,7 @@ def solve_part_2():
             intcode = base_intcode.copy()
             intcode[1] = i
             intcode[2] = j
-            if analyze(intcode)[0] == 19690720:
+            if analyze(0, intcode)[2][0] == 19690720:
                 noun = i
                 verb = j
 
