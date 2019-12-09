@@ -33,8 +33,6 @@ def solve_part_2():
         test_completed = False
         run = 1
         while not test_completed:
-        # for i in range(5):
-            # print(f"intcode_a: {','.join([str(code) for code in intcode_a])}")
             logger_a.add_log(f'Run: {run}\n')
             logger_b.add_log(f'Run: {run}\n')
             logger_c.add_log(f'Run: {run}\n')
@@ -65,12 +63,8 @@ def solve_part_2():
             else:
                 input_e = [amp_d_output]
 
-            # print(f'input_e: {input_e}')
-            # print(f'intcode_e: {intcode_e}')
-            # print(f'index_e: {index_e}')
             amp_e_output, index_e, intcode_e, test_completed = analyze(index_e, intcode_e, True, input_e, logger_e)
             run += 1
-            # print(f'E: {amp_e_output}')
             e_signals.append(amp_e_output)
             first_inputs = False
             input_a = [amp_e_output]
