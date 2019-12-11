@@ -39,9 +39,6 @@ def analyze(
     if inputs is None:
         inputs = []
 
-    if logger is None:
-        logger = Logger()
-
     relative_base = 0
     input_number = 0
     while instruction_pointer <= len(intcode):
@@ -122,7 +119,8 @@ def analyze(
 
             instruction_pointer += 2
         log += '\n\n'
-        logger.add_log(log)
+        if logger:
+            logger.add_log(log)
 
     return 0, instruction_pointer, intcode, True
 
