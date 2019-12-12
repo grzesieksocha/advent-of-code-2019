@@ -29,17 +29,15 @@ def get_value(mode, intcode, instruction_pointer, offset, relative_base):
 
 def analyze(
         instruction_pointer: int,
+        relative_base: int,
         intcode: list,
         automatic_mode: bool = False,
         inputs=None,
         logger: Logger = None
 ):
-    extra_memory = [0] * 10000
-    intcode += extra_memory
     if inputs is None:
         inputs = []
 
-    relative_base = 0
     input_number = 0
     while instruction_pointer <= len(intcode):
         log = ''
@@ -50,7 +48,7 @@ def analyze(
 
         if opcode == 99:
             log += f'Break\n'
-            return 0, instruction_pointer, intcode, True
+            return 0, instruction_pointer, relative_base, True
 
         if opcode == 1 or opcode == 2:
             num_one = get_value(first_mode, intcode, instruction_pointer, 1, relative_base)
@@ -85,7 +83,7 @@ def analyze(
             if automatic_mode:
                 instruction_pointer += 2
                 log += f'Output = {num_one}\n'
-                return num_one, instruction_pointer, intcode, False
+                return num_one, instruction_pointer, relative_base, False
             else:
                 print(num_one)
             instruction_pointer += 2
@@ -122,7 +120,7 @@ def analyze(
         if logger:
             logger.add_log(log)
 
-    return 0, instruction_pointer, intcode, True
+    return 0, instruction_pointer, relative_base, True
 
 
 def define_mode(instruction: int):
