@@ -7,8 +7,10 @@ Developed on Python 3.7.5
 ### [Day 1](https://adventofcode.com/2019/day/1)
 ###### 
 
-### [Day 10]((https://adventofcode.com/2019/day/1))
-Work on a better solution (collect unique vectors with visible asteroid)
-i.e. [Dementophobia](https://github.com/Dementophobia/advent-of-code-2019/blob/master/2019_10_p1.py)
+### [Day 10]((https://adventofcode.com/2019/day/10))
+Work on a better solution (collect unique vectors with visible asteroid) - used a bit in part 2.
+Analyzing Dementophobia repo helped a lot!
 
-[WOW repo - fogleman](https://github.com/fogleman/AdventOfCode2019)
+[fogleman](https://github.com/fogleman/AdventOfCode2019)
+
+[Dementophobia](https://github.com/Dementophobia/advent-of-code-2019)

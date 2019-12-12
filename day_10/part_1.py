@@ -72,3 +72,4 @@ def solve_part_1():
             point = pair[0]
 
     print(f'{max_number} in {point}')
+    return point
