@@ -26,3 +26,4 @@ Other references to check out:
 I would love to animate it!
 
 ### [Day 14]((https://adventofcode.com/2019/day/14))
+Really messed up with the structure of the input data... Lesson learned ;)

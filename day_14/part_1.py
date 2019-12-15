@@ -9,35 +9,47 @@ def resolve(element: list, reactions: dict, leftovers: dict):
     increment = 0
 
     quantity_made_in_reaction = int(reactions[element][0][0])
-    print(quantity_needed)
-    print(quantity_made_in_reaction)
-    print(leftovers)
-    if element in leftovers.keys() and quantity_needed % quantity_made_in_reaction < leftovers[element]:
-        quantity_needed -= quantity_needed % quantity_made_in_reaction
-        leftovers[element] -= quantity_needed % quantity_made_in_reaction
-    if element in leftovers.keys() and quantity_needed < leftovers[element]:
-        leftovers[element] -= quantity_needed
-        return []
+    while quantity_produced < quantity_needed:
+        increment += 1
+        quantity_produced += quantity_made_in_reaction
+
+    elements_needed = deepcopy(reactions[element][1])
+    for pair in elements_needed:
+        pair[0] = int(pair[0]) * increment
+
+    if element in leftovers.keys():
+        leftovers[element] += quantity_produced - quantity_needed
     else:
-        while quantity_produced < quantity_needed:
-            increment += 1
-            quantity_produced += quantity_made_in_reaction
+        leftovers[element] = quantity_produced - quantity_needed
 
-        elements_needed = deepcopy(reactions[element][1])
-        for pair in elements_needed:
-            pair[0] = int(pair[0]) * increment
+    return elements_needed
 
-        if element in leftovers.keys():
-            leftovers[element] += quantity_produced - quantity_needed
+
+def consolidate_and_use_leftovers(for_fuel, leftovers):
+    new_for_fuel = []
+    temp_dict = dict()
+    for element in for_fuel:
+        if element[1] in temp_dict.keys():
+            temp_dict[element[1]] += int(element[0])
         else:
-            leftovers[element] = quantity_produced - quantity_needed
+            temp_dict[element[1]] = int(element[0])
 
-        return elements_needed
+    for key in temp_dict.keys():
+        if key in leftovers.keys():
+            if temp_dict[key] >= leftovers[key]:
+                new_for_fuel.append([temp_dict[key] - leftovers[key], key])
+                leftovers[key] = 0
+            else:
+                leftovers[key] = leftovers[key] - temp_dict[key]
+        else:
+            new_for_fuel.append([temp_dict[key], key])
+
+    return new_for_fuel
 
 
 def solve_part_1():
     reactions = dict()
-    with open(sys.path[0] + '/day_14/test_data/test_3.txt', 'r') as f:
+    with open(sys.path[0] + '/day_14/input.txt', 'r') as f:
         for line in f:
             data = list(map(lambda formula: formula.strip(), line.rstrip('\n').split('=>')))
             product = data[1].split()
@@ -51,6 +63,8 @@ def solve_part_1():
         for_fuel = resolve(for_fuel[0], reactions, leftovers) + for_fuel[1:]
         if for_fuel[0][1] == 'ORE':
             result.append(for_fuel.pop(0))
+
+        for_fuel = consolidate_and_use_leftovers(for_fuel, leftovers)
 
     ore_needed = 0
     for needed in result:
