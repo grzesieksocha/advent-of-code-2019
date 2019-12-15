@@ -26,4 +26,6 @@ Other references to check out:
 I would love to animate it!
 
 ### [Day 14]((https://adventofcode.com/2019/day/14))
-Really messed up with the structure of the input data... Lesson learned ;)
+Really messed up with the structure of the input data...
+
+I did not beat part 2 - [kresimir-lukin solution](https://github.com/kresimir-lukin/AdventOfCode2019/blob/master/day14.py) for reference
